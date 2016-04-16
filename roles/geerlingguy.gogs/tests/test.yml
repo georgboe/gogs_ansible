@@ -1,0 +1,21 @@
+- hosts: all
+
+  pre_tasks:
+    - name: Ensure build dependencies are installed (RedHat).
+      yum: 'name="{{ item }}" state=present'
+      with_items:
+        - curl
+        - sudo
+        - which
+      when: ansible_os_family == 'RedHat'
+
+    - name: Ensure build dependencies are installed (Debian).
+      apt: 'name="{{ item }}" state=installed'
+      with_items:
+        - curl
+        - sudo
+      when: ansible_os_family == 'Debian'
+
+  roles:
+    - geerlingguy.git
+    - role_under_test
