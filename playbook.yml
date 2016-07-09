@@ -11,8 +11,16 @@
       become: yes
     - role: geerlingguy.gogs
       become: yes
+    - role: generate-ssl-cert
+      ssl_certificate_basename: gogs
+      ssl_certificate_bit_length: 2048
     - role: nginx
       nginx_sites:
+        redirect:
+            - listen 80
+            - return 301 https://$host$request_uri
         default:
-          - listen 80
+          - listen 443 ssl
           - location / { proxy_pass http://localhost:3000; }
+          - ssl_certificate /etc/pki/tls/certs/gogs.crt
+          - ssl_certificate_key /etc/pki/tls/private/gogs.key
